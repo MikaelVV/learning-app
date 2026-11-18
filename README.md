@@ -16,3 +16,12 @@
 
 - Why is REST a reasonable choice for this app?
     - It is a reasonable choice, because this app needs a way for the frontend and backend to communicate.
+
+## State Management
+
+Local State 
+    - Temporary data
+Zustand State
+    - Application wide data
+SQLite 
+    - Persistant data
