@@ -1,29 +1,30 @@
 import { useEffect, useState } from "react";
-import type { LearningEntryData } from "../types/LearningEntryData";
-import LearningEntry from "./LearningEntry";
+import LearningEntry from "../types/LearningEntry";
+import { useLearningStore } from "../store/useLearningStore";
+import { loadEntries } from "../api/entries";
 
 function LearningEntries() {
-  const [entries, setEntries] = useState<LearningEntryData[]>([]);
+
+  const entries = useLearningStore((state) => state.entries);
+
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
+  async function handleLoadEntries() {
+    setLoadError("");
+    setLoading(true);
+
+    try {
+      await loadEntries();
+    } catch (error) {
+      console.error(error);
+      setLoadError("Could not load entries. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
   useEffect(() => {
-    fetch("http://localhost:3001/api/entries")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch entries");
-        }
-
-        return response.json();
-      })
-      .then((data: LearningEntryData[]) => {
-        setEntries(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    handleLoadEntries();
   }, []);
 
   if (loading) {
@@ -33,6 +34,12 @@ function LearningEntries() {
   return (
     <section>
       <h1>My Learning Entries</h1>
+
+      <button type="button" onClick={handleLoadEntries}>
+        Load from backend
+      </button>
+
+      {loadError && <p>{loadError}</p>}
 
       {entries.map((entry) => (
         <LearningEntry key={entry.id} entry={entry} />

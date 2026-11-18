@@ -96,56 +96,6 @@ app.delete("/api/entries/:id", (req, res) => {
   });
 });
 
-app.post("/api/entries", (req, res) => {
-  const { topic, date, learned, confidence, dog } = req.body;
-
-  const result = db.prepare(`
-    INSERT INTO learning_entries
-    (topic, date, learned, confidence, dog)
-    VALUES (?, ?, ?, ?, ?)
-  `).run(topic, date, learned, confidence, dog);
-
-  res.status(201).json({
-    id: result.lastInsertRowid,
-    topic,
-    date,
-    learned,
-    confidence,
-    dog
-  });
-});
-
-/*const entries: LearningEntryData[] = [
-  {
-    id: 1,
-    topic: "React Components",
-    date: "2026-10-22",
-    learned: "Components help us reuse UI code.",
-    confidence: 3,
-    dog: "Dalmation"
-  },
-  {
-    id: 2,
-    topic: "React State",
-    date: "2026-10-27",
-    learned: "State lets the interface react to changes.",
-    confidence: 2,
-    dog: "Tibetan Spaniel"
-  },
-    {
-    id: 3,
-    topic: "Very interesting topic",
-    date: "2026-10-27",
-    learned: "State lets the interface react to changes.",
-    confidence: 5,
-    dog: "Bulldog"
-  }
-];
-
-app.get("/api/entries", (req, res) => {
-  res.json(entries);
-}); */
-
 app.listen(PORT, () => {
   console.log(`Backend running at http://localhost:${PORT}`);
 });

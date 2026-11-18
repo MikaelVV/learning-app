@@ -1,5 +1,6 @@
 import { useState } from "react";
-import type { LearningEntryData } from "../types/LearningEntryData";
+import { saveEntry, loadEntries } from "../api/entries";
+import type { NewLearningEntry } from "../api/entries";
 
 export default function HomePage() {
   const [topic, setTopic] = useState("");
@@ -16,7 +17,7 @@ export default function HomePage() {
       return;
     }
 
-    const newEntry: Omit<LearningEntryData, "id"> = {
+    const newEntry: NewLearningEntry = {
       topic: topic.trim(),
       date,
       learned: learned.trim(),
@@ -24,23 +25,22 @@ export default function HomePage() {
       dog: dog.trim()
     };
 
-    try {
-      const response = await fetch(
-        "http://localhost:3001/api/entries",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(newEntry)
-        }
-      );
+    setMessage("");
 
-      if (!response.ok) {
-        throw new Error("Failed to save entry");
-      }
+
+    try {
+      await saveEntry(newEntry);
+    } catch {
+      setMessage("Couldn't save entry. Check your backend!");
+      return;
+    }
+
+
+    try {
+      await loadEntries();
 
       setMessage("Entry saved successfully!");
+
 
       setTopic("");
       setDate("");
@@ -48,9 +48,9 @@ export default function HomePage() {
       setConfidence(3);
       setDog("");
 
-    } catch {
-      setMessage("Couldn't save entry. Check your backend!");
-    }
+      } catch {
+        setMessage("Couldn't save entry. Check your backend!");
+      }
   }
 
   return (

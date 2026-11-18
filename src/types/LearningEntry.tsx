@@ -1,6 +1,6 @@
 import type { LearningEntryData } from "../types/LearningEntryData";
 
-type LearningEntryProps = {
+export type LearningEntryProps = {
   entry: LearningEntryData
 };
 
