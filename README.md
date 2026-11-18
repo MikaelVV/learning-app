@@ -19,9 +19,9 @@
 
 ## State Management
 
-Local State 
-    - Temporary data
-Zustand State
-    - Application wide data
-SQLite 
-    - Persistant data
+    Local State
+        - Temporary data
+    Zustand State
+        - Application wide data
+    SQLite
+        - Persistant data
