@@ -19,9 +19,37 @@
 
 ## State Management
 
-    Local State
-        - Temporary data
-    Zustand State
-        - Application wide data
-    SQLite
-        - Persistant data
+- Local State
+    - Temporary data
+- Zustand State
+    - Application wide data
+- SQLite
+    - Persistant data
+
+## Testing & Reliability
+
+Created validation.test.js using Node.js's built-in test runner.
+
+Two separate unit tests were implemented to test the validation logic used by the POST /api/entries endpoint.
+
+- Test 1: Confidence validation
+    - Valid input: 4 (accepted).
+    - Invalid input: 6 (rejected).
+    - Checks that confidence must be an integer between 1 and 5.
+
+- Test 2: Topic validation
+    - Valid input: "React" (accepted).
+    - Invalid input: " " (rejected).
+    - Checks that topic must be a non-empty string.
+
+### Running the tests
+
+    node --test validation.test.js
+
+
+### Test results
+
+- Both tests passed successfully:
+    - Confidence validation: PASS.
+    - Topic validation: PASS.
+    - Total: 2 tests passed, 0 failed.

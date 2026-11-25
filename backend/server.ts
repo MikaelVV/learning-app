@@ -13,6 +13,7 @@ import { db } from "./data/database";
   dog: string;
 }; */
 
+const { isValidConfidence, isValidTopic } = require("./validation");
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -45,38 +46,42 @@ app.get("/api/entries/:id", (req, res) => {
 app.post("/api/entries", (req, res) => {
   const { topic, date, learned, confidence, dog } = req.body;
 
-  if (
-    typeof topic !== "string" ||
-    typeof date !== "string" ||
-    typeof learned !== "string" ||
-    typeof confidence !== "number" ||
-    !Number.isInteger(confidence) ||
-    confidence < 1 ||
-    confidence > 5 ||
-    typeof dog !== "string" ||
-    !topic.trim() ||
-    !date.trim() ||
-    !learned.trim() ||
-    !dog.trim()
-  ) {
-    return res.status(400).json({
-      message: "Invalid learning entry data"
+if (
+  !isValidTopic(topic) ||
+  typeof date !== "string" ||
+  !date.trim() ||
+  typeof learned !== "string" ||
+  !learned.trim() ||
+  !isValidConfidence(confidence) ||
+  typeof dog !== "string" ||
+  !dog.trim()
+) {
+  return res.status(400).json({
+    message: "Invalid learning entry data"
+  });
+}
+
+  try {
+    const result = db.prepare(`
+      INSERT INTO learning_entries
+      (topic, date, learned, confidence, dog)
+      VALUES (?, ?, ?, ?, ?)
+    `).run(topic.trim(), date.trim(), learned.trim(), confidence, dog.trim());
+
+    const newEntry = db.prepare(`
+      SELECT * FROM learning_entries WHERE id = ?
+    `).get(result.lastInsertRowid);
+
+    return res.status(201).json(newEntry);
+
+  } catch (error) {
+    console.error("Error saving learning entry:", error);
+
+    return res.status(500).json({
+      message: "Failed to save learning entry"
     });
   }
-
-  const result = db.prepare(`
-    INSERT INTO learning_entries
-    (topic, date, learned, confidence, dog)
-    VALUES (?, ?, ?, ?, ?)
-  `).run(topic, date, learned, confidence, dog);
-
-  const newEntry = db.prepare(`
-    SELECT * FROM learning_entries WHERE id = ?
-  `).get(result.lastInsertRowid);
-
-  res.status(201).json(newEntry);
 });
-
 
 
 app.delete("/api/entries/:id", (req, res) => {
